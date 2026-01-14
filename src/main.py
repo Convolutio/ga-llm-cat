@@ -14,10 +14,11 @@ from typing import TYPE_CHECKING, Callable
 from ga_llm.base_gene import BaseGene
 from ga_llm.config import EvolutionConfig
 from ga_llm.engine import HybridEvolutionEngine
-from ga_llm.llm_utils import default_llm_call
 from ga_llm.evaluation import Evaluator
 from ga_llm.constraints import ConstraintValidator
 from ga_llm.prompts.template_manager import PromptTemplateManager
+
+from src.vllm_connexion import local_vllm_call
 
 # ===================== Travel Gene Class =====================
 class TravelGene(BaseGene):
@@ -224,14 +225,14 @@ if __name__ == "__main__":
         use_llm_for_crossover=True
     )
 
-    evaluator = Evaluator(PROMPTS.get("evaluate"), default_llm_call)
+    evaluator = Evaluator(PROMPTS.get("evaluate"), local_vllm_call)
     
     engine = HybridEvolutionEngine(
         config=config,
         gene_cls=TravelGene,
         task_prompt=PROMPTS.get("task"),
         eval_prompt=PROMPTS.get("evaluate"),
-        llm_callback=default_llm_call
+        llm_callback=local_vllm_call
     )
 
     best, score = engine.evolve()
